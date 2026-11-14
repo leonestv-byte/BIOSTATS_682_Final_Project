@@ -53,18 +53,20 @@ lines(density(samples_prior))
 ##### Conditional Distributions #####
 #####################################
 
-# A) Male
+# Sex A)
+
+## A 1) Male
 
 male_data <- data[data$Sex == 'Male', ]
 
-alpha <- nrow(male_data[male_data$Outcome == 'Recovered',])
-beta <- nrow(male_data[male_data$Outcome == 'Deceased',])
+alpha_posterior <- nrow(male_data[male_data$Outcome == 'Recovered',])
+beta_posterior <- nrow(male_data[male_data$Outcome == 'Deceased',])
 
 samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
 plot(density(samples_posterior))
 
 
-alpha / (alpha + beta) # 93%
+alpha_posterior / (alpha_posterior + beta_posterior) # 93%
 
 # Bayes Stats
 # P(R | M) = P(M | R) P(R) / P(M)
@@ -73,17 +75,17 @@ p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
 p_m_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Sex == 'Male',]) / nrow(data[data$Outcome == 'Recovered',])
 (p_m_given_r * p_r) / p_m # 93% 
 
-# B) Female
+## A 2) Female
 
-female_data <- female_data[female_data$Sex == 'Female', ]
+female_data <- data[data$Sex == 'Female', ]
 
-alpha <- nrow(female_data[female_data$Outcome == 'Recovered',])
-beta <- nrow(female_data[female_data$Outcome == 'Deceased',])
+alpha_posterior <- nrow(female_data[female_data$Outcome == 'Recovered',])
+beta_posterior <- nrow(female_data[female_data$Outcome == 'Deceased',])
 
 samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
 plot(density(samples_posterior))
 
-alpha / (alpha + beta) # 90%
+alpha_posterior / (alpha_posterior + beta_posterior) # 90%
 
 # Bayes Stats
 # P(R | F) = P(F | R) P(R) / P(F)
@@ -93,4 +95,62 @@ p_f_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Sex == 'Female',]) /
 (p_f_given_r * p_r) / p_f # 90% 
 
 
+# B) Hospital
+
+
+## B 1) Hospital 1
+
+h1_data <- data[data$Hospital == 'A', ]
+
+alpha_posterior <- nrow(h1_data[h1_data$Outcome == 'Recovered',])
+beta_posterior <- nrow(h1_data[h1_data$Outcome == 'Deceased',])
+
+samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
+plot(density(samples_posterior))
+
+alpha_posterior / (alpha_posterior + beta_posterior) # 93%
+
+# Bayes Stats
+# P(R | F) = P(F | R) P(R) / P(F)
+p_h1 <- nrow(h1_data) / nrow(data)
+p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
+p_h1_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'A',]) / nrow(data[data$Outcome == 'Recovered',])
+(p_h1_given_r * p_r) / p_h1 # 93% 
+
+
+## B 2) Hospital 2
+h2_data <- data[data$Hospital == 'B', ]
+
+alpha_posterior <- nrow(h2_data[h2_data$Outcome == 'Recovered',])
+beta_posterior <- nrow(h2_data[h2_data$Outcome == 'Deceased',])
+
+samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
+plot(density(samples_posterior))
+
+alpha_posterior / (alpha_posterior + beta_posterior) # 95%
+
+# Bayes Stats
+# P(R | F) = P(F | R) P(R) / P(F)
+p_h2 <- nrow(h2_data) / nrow(data)
+p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
+p_h2_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'B',]) / nrow(data[data$Outcome == 'Recovered',])
+(p_h2_given_r * p_r) / p_h2 # 95% 
+
+## B 3) Hospital 3
+h3_data <- data[data$Hospital == 'C', ]
+
+alpha_posterior <- nrow(h3_data[h3_data$Outcome == 'Recovered',])
+beta_posterior <- nrow(h3_data[h3_data$Outcome == 'Deceased',])
+
+samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
+plot(density(samples_posterior))
+
+alpha_posterior / (alpha_posterior + beta_posterior) # 88%
+
+# Bayes Stats
+# P(R | F) = P(F | R) P(R) / P(F)
+p_h3 <- nrow(h3_data) / nrow(data)
+p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
+p_h3_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'C',]) / nrow(data[data$Outcome == 'Recovered',])
+(p_h3_given_r * p_r) / p_h3 # 88% 
 
