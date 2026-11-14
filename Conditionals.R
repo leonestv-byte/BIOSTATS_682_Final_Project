@@ -9,7 +9,12 @@ names(data)
 data$Hospital <- factor(data$Hospital)
 data$Sex <- factor(data$Sex)
 data$Disease2 <- factor(data$Disease2)
+
+# Remove Ongoing (33 examples)
+data <- data[data$Outcome != 'Ongoing',]
+
+# Finish Factoring
 data$Outcome <- factor(data$Outcome)
 
-# Simple Age Linear Regression Model
-model <- lm(Age ~ Hospital + Sex + Disease2, data = data, na.action = na.exclude)
+# Logistic Regression Model 
+model <- glm(Outcome ~ Hospital + Sex + Disease2,data = data, family = "binomial")
