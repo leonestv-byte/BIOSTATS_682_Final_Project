@@ -16,8 +16,6 @@ data <- data[data$Outcome != 'Ongoing',]
 # Finish Factoring
 data$Outcome <- factor(data$Outcome)
 
-# Logistic Regression Model 
-model <- glm(Outcome ~ Hospital + Sex + Disease2, data = data, family = "binomial")
 
 ##################
 ##### Priors #####
