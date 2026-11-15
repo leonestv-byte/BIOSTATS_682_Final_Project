@@ -29,10 +29,16 @@ beta <- 50
 alpha_posterior <- alpha + nrow(data[data$Outcome == 'Recovered',])
 beta_posterior <- beta + nrow(data[data$Outcome == 'Deceased',])
 
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-samples_prior <- rbeta(1000, alpha, beta)
-plot(density(samples_posterior))
-lines(density(samples_prior))
+x <- seq(0, 1, length.out = 500)
+
+samples_posterior <- dbeta(x, alpha_posterior, beta_posterior)
+samples_prior <- dbeta(x, alpha, beta)
+# Likelihood multiplied to put it on the same scale as dbeta * (nrow(data) + 1)
+samples_likelihood <- dbinom(nrow(data[data$Outcome == 'Recovered',]), size = nrow(data), prob = x) * (nrow(data) + 1)
+
+plot(x, samples_posterior, xlim = c(0, 1), col = 'purple', type = 'l')
+lines(x, samples_prior, col = 'blue')
+lines(x, samples_likelihood, col = 'red')
 
 # B) Prior from Research Literature 
 
@@ -42,10 +48,15 @@ beta <- 15
 alpha_posterior <- alpha + nrow(data[data$Outcome == 'Recovered',])
 beta_posterior <- beta + nrow(data[data$Outcome == 'Deceased',])
 
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-samples_prior <- rbeta(1000, alpha, beta)
-plot(density(samples_posterior))
-lines(density(samples_prior))
+x <- seq(0, 1, length.out = 500)
+
+samples_posterior <- dbeta(x, alpha_posterior, beta_posterior)
+samples_prior <- dbeta(x, alpha, beta)
+samples_likelihood <- dbinom(nrow(data[data$Outcome == 'Recovered',]), size = nrow(data), prob = x) * (nrow(data) + 1)
+
+plot(x, samples_posterior, xlim = c(0, 1), col = 'purple', type = 'l')
+lines(x, samples_prior, col = 'blue')
+lines(x, samples_likelihood, col = 'red')
 
 #####################################
 ##### Conditional Distributions #####
