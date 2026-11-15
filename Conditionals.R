@@ -10,6 +10,7 @@ data$Hospital <- factor(data$Hospital)
 data$Sex <- factor(data$Sex)
 data$Disease2 <- factor(data$Disease2)
 
+
 # Remove Ongoing (33 examples)
 data <- data[data$Outcome != 'Ongoing',]
 
