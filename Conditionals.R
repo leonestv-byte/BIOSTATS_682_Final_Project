@@ -63,104 +63,61 @@ lines(x, samples_likelihood, col = 'red')
 ##### Conditional Distributions #####
 #####################################
 
+#####################################
 # Sex A)
 
+conditional_bayes_probability_distributions <- function(data, field, field_value) {
+  sub_data <- data[data[[field]] == field_value,]
+  
+  # Posterior
+  alpha_posterior <- nrow(sub_data[sub_data$Outcome == 'Recovered',])
+  beta_posterior <- nrow(sub_data[sub_data$Outcome == 'Deceased',])
+  samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
+  
+  expected <- alpha_posterior / (alpha_posterior + beta_posterior)
+  print(paste("Expected value: ", expected))
+  
+  # Bayes Stats
+  # P(R | S) = P(S | R) P(R) / P(S)
+  p_s <- nrow(sub_data) / nrow(data)
+  p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
+  p_s_given_r <- nrow(data[data$Outcome == 'Recovered' & data[[field]] == field_value,]) / nrow(data[data$Outcome == 'Recovered',])
+  bayes_expected <- (p_s_given_r * p_r) / p_s
+  print(paste("Value from Bayes: ", bayes_expected))
+  
+  # Plot
+  plot(density(samples_posterior))
+}
+
+
 ## A 1) Male
-
-male_data <- data[data$Sex == 'Male', ]
-
-alpha_posterior <- nrow(male_data[male_data$Outcome == 'Recovered',])
-beta_posterior <- nrow(male_data[male_data$Outcome == 'Deceased',])
-
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-plot(density(samples_posterior))
-
-
-alpha_posterior / (alpha_posterior + beta_posterior) # 93%
-
-# Bayes Stats
-# P(R | M) = P(M | R) P(R) / P(M)
-p_m <- nrow(male_data) / nrow(data)
-p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
-p_m_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Sex == 'Male',]) / nrow(data[data$Outcome == 'Recovered',])
-(p_m_given_r * p_r) / p_m # 93% 
+conditional_bayes_probability_distributions(data, "Sex", "Male")
+# "Expected value:  0.935483870967742"
+# "Value from Bayes:  0.935483870967742"
 
 ## A 2) Female
+conditional_bayes_probability_distributions(data, "Sex", "Female")
+# "Expected value:  0.902654867256637"
+# "Value from Bayes:  0.902654867256637"
 
-female_data <- data[data$Sex == 'Female', ]
-
-alpha_posterior <- nrow(female_data[female_data$Outcome == 'Recovered',])
-beta_posterior <- nrow(female_data[female_data$Outcome == 'Deceased',])
-
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-plot(density(samples_posterior))
-
-alpha_posterior / (alpha_posterior + beta_posterior) # 90%
-
-# Bayes Stats
-# P(R | F) = P(F | R) P(R) / P(F)
-p_f <- nrow(female_data) / nrow(data)
-p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
-p_f_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Sex == 'Female',]) / nrow(data[data$Outcome == 'Recovered',])
-(p_f_given_r * p_r) / p_f # 90% 
-
+#####################################
 
 # B) Hospital
 
-
 ## B 1) Hospital 1
-
-h1_data <- data[data$Hospital == 'A', ]
-
-alpha_posterior <- nrow(h1_data[h1_data$Outcome == 'Recovered',])
-beta_posterior <- nrow(h1_data[h1_data$Outcome == 'Deceased',])
-
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-plot(density(samples_posterior))
-
-alpha_posterior / (alpha_posterior + beta_posterior) # 93%
-
-# Bayes Stats
-# P(R | F) = P(F | R) P(R) / P(F)
-p_h1 <- nrow(h1_data) / nrow(data)
-p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
-p_h1_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'A',]) / nrow(data[data$Outcome == 'Recovered',])
-(p_h1_given_r * p_r) / p_h1 # 93% 
-
+conditional_bayes_probability_distributions(data, "Hospital", "A")
+# "Expected value:  0.931034482758621"
+# "Value from Bayes:  0.931034482758621"
 
 ## B 2) Hospital 2
-h2_data <- data[data$Hospital == 'B', ]
-
-alpha_posterior <- nrow(h2_data[h2_data$Outcome == 'Recovered',])
-beta_posterior <- nrow(h2_data[h2_data$Outcome == 'Deceased',])
-
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-plot(density(samples_posterior))
-
-alpha_posterior / (alpha_posterior + beta_posterior) # 95%
-
-# Bayes Stats
-# P(R | F) = P(F | R) P(R) / P(F)
-p_h2 <- nrow(h2_data) / nrow(data)
-p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
-p_h2_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'B',]) / nrow(data[data$Outcome == 'Recovered',])
-(p_h2_given_r * p_r) / p_h2 # 95% 
+conditional_bayes_probability_distributions(data, "Hospital", "B")
+# "Expected value:  0.950617283950617"
+# "Value from Bayes:  0.950617283950617"
 
 ## B 3) Hospital 3
-h3_data <- data[data$Hospital == 'C', ]
+conditional_bayes_probability_distributions(data, "Hospital", "C")
+# "Expected value:  0.885416666666667"
+# "Value from Bayes:  0.885416666666667"
 
-alpha_posterior <- nrow(h3_data[h3_data$Outcome == 'Recovered',])
-beta_posterior <- nrow(h3_data[h3_data$Outcome == 'Deceased',])
-
-samples_posterior <- rbeta(1000, alpha_posterior, beta_posterior)
-plot(density(samples_posterior))
-
-alpha_posterior / (alpha_posterior + beta_posterior) # 88%
-
-# Bayes Stats
-# P(R | F) = P(F | R) P(R) / P(F)
-p_h3 <- nrow(h3_data) / nrow(data)
-p_r <- nrow(data[data$Outcome == 'Recovered',]) / nrow(data)
-p_h3_given_r <- nrow(data[data$Outcome == 'Recovered' & data$Hospital == 'C',]) / nrow(data[data$Outcome == 'Recovered',])
-(p_h3_given_r * p_r) / p_h3 # 88% 
+#####################################
 
