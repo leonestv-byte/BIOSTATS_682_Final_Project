@@ -31,7 +31,7 @@ probabilities
 
 # Work:
 # $$P(\textbf{Recovered}| \textbf{Sex, Hospital}) = \frac{1}{1+e^{0.6371 + 0.6141SexMale -0.6937HospitalB  -1.9604HospitalC}}$$
-#  $$ P(\textbf{Recovered}| \beta) \propto L(\beta | \textbf{Recovered}) P (\beta)$$
+#  $$ P(\beta |\textbf{Recovered} ) \propto L(\beta | \textbf{Recovered}) P (\beta)$$
 #  $$ \pi(\beta) \propto |J(\beta)|^{1/2}$$
 #  $$ |J(\beta)| = -E[\frac{\partial^2ln(\pi(y | \beta))}{\partial} | \beta]$$
 #  $$ |J(\beta)| = -E[\frac{\partial^2 l(\beta)}{\partial} | \beta] $$ \newline
