@@ -36,6 +36,7 @@ diseases <- as.numeric(data$Disease2)
 
 
 
+
 model <- function() {
   
   for (i in 1:n) {
@@ -101,3 +102,32 @@ survived_estimates <- ifelse(p >= 0.8, 1, 0)
 
 accuracy <- mean(survived == survived_estimates)
 
+##########################################
+###### Hierarchical Model - Ongoing ######
+##########################################
+data <- read_csv("ext_2025.csv")
+
+data$Hospital <- factor(data$Hospital)
+data$Sex <- factor(data$Sex)
+data$Disease2 <- factor(data$Disease2)
+admission_date <- as.numeric(as.Date(data$Admission_date, format = "%Y-%m-%d"))
+
+survived <- ifelse(data$Outcome == "Recovered", 1, 0)
+died <- ifelse(data$Outcome == "Deceased", 1, 0)
+ongoing <- ifelse(data$Outcome == "Ongoing", 1, 0)
+
+model <- function() {
+  
+  final_survived <- elephant_released * survived
+  
+  for (i in 1:n) {
+    elephant_released[i] <- dbern(y[i])
+    logit(y[i]) <- alpha + (alpha_admitted_date * admission_date[i])
+  }
+  
+  for (i in 1:n) {
+    survived[i] ~ dbern(p[i])
+    logit(p[i]) <- beta + (beta_age *  ages[i]) + (beta_gender * genders[i]) + (beta_disease * diseases[i])
+  }
+  
+}
