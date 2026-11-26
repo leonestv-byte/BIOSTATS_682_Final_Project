@@ -237,9 +237,11 @@ p_released <- plogis(logits)
 
 p_released_effective <- (1 - p_died) * p_released
 
-#####
-#####
-#####
+##############################
+##############################
+##### Checking Numbers   #####
+##############################
+##############################
 
 p_deceased <- p_died
 
