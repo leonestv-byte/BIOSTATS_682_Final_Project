@@ -250,13 +250,20 @@ p_recovered <- (1 - p_died) * p_released
 p_ongoing <- (1 - p_died) * (1 - p_released)
 
 
-pred_died <- ifelse(p_deceased >= 0.5, 1, 0)
+pred_died <- ifelse(p_deceased >= 0.3, 1, 0) # 0.3 is acceptable.
 accuracy_died <- mean(pred_died == died)
+
+
+cm_died <- table(
+  Predicted = factor(pred_died, levels = c(0, 1), labels = c("Survived", "Died")),
+  Actual    = factor(died,      levels = c(0, 1), labels = c("Survived", "Died"))
+)
+
+print(cm_died)
 
 
 pred_released <- ifelse(p_released[map_alive] >= 0.5, 1, 0)
 accuracy_released <- mean(pred_released == released[map_alive])
-
 
 
 
