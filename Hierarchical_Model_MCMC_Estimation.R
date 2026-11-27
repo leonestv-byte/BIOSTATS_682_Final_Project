@@ -8,9 +8,10 @@ data$Sex <- factor(data$Sex)
 data$Disease2 <- factor(data$Disease2)
 admission_date <- as.numeric(scale(as.Date(data$Admission_date, format = "%Y-%m-%d")))
 
-ages <- data$Age
+ages <- scale(data$Age)
 genders <- ifelse(data$Sex == "Male", 1, 0)
 diseases <- as.numeric(data$Disease2)
+hospitals <- as.numeric(data$Hospital)
 
 
 released <- ifelse(data$Outcome == "Recovered", 1, 0)
@@ -30,7 +31,8 @@ n_alive <- length(map_alive)
 x1 <- ages
 x2 <- genders
 x3 <- diseases
-mortality_X <- cbind(1, x1, x2, x3)
+x4 <- hospitals
+mortality_X <- cbind(1, x1, x2, x3, x4)
 
 z1 <- admission_date
 released_X <- cbind(1, z1)
@@ -63,12 +65,12 @@ log_likelihood <- function(beta, mortality_X, released_X, released, died, ongoin
   log_released <- plogis(released_logits, log.p = TRUE)
   log_not_released <- plogis(released_logits, lower.tail = FALSE, log.p = TRUE)
   
-  likelihood <- sum((died * log_died) + (released * log_not_died * log_released) + (ongoing * log_not_died * log_not_released))
+  likelihood <- sum((died * log_died) + (released * (log_not_died + log_released)) + (ongoing * (log_not_died + log_not_released)))
   
   return(likelihood)
 }
 
-log_prior <- function(beta, prior_sd = 10) {
+log_prior <- function(beta, prior_sd = 2.5) {
   return(sum(dnorm(beta, mean = 0, sd = prior_sd, log = TRUE)))
 }
 
@@ -102,14 +104,14 @@ run_mcmc <- function(mortality_X, released_X, released, died, ongoing, n_iter, p
   for (i in 2:n_iter) {
     proposed_beta <- sample(current_beta, proposal_sd)
     alpha <- acceptance_probability(current_beta, proposed_beta, mortality_X, released_X, released, died, ongoing)
-    current_beta <- if (runif(1) < alpha) proposed_beta else current_beta
+    current_beta <- if (log(runif(1)) < alpha) proposed_beta else current_beta
     samples[[i]] <- current_beta
   }
   return(samples)
 }
 
 
-posterior_samples <- run_mcmc(mortality_X, released_X, released, died, ongoing, 25000, 0.15)
+posterior_samples <- run_mcmc(mortality_X, released_X, released, died, ongoing, 25000, 0.2)
 
 burnin <- 15000
 
@@ -123,7 +125,7 @@ posterior_samples_burned_in <- do.call(
 mean_posterior <- colMeans(posterior_samples_burned_in)
 
 
-# Probability of death
+# Posterior Estimates
 
 beta <- mean_posterior[1]
 
@@ -133,10 +135,15 @@ beta_gender_mean <- mean_posterior[3]
 
 beta_disease_mean <- mean_posterior[4]
 
-alpha <- mean_posterior[5]
+beta_hospitals_mean <- mean_posterior[5]
 
-alpha_date <- mean_posterior[6]
-logits <- beta + (beta_age_mean *  ages) + (beta_gender_mean * genders) + (beta_disease_mean * diseases)
+alpha <- mean_posterior[6]
+
+alpha_date <- mean_posterior[7]
+
+# Probability of death
+
+logits <- beta + (beta_age_mean *  ages) + (beta_gender_mean * genders) + (beta_disease_mean * diseases) + (beta_hospitals_mean * hospitals)
 
 p_died <- plogis(logits)
 
