@@ -109,8 +109,55 @@ run_mcmc <- function(mortality_X, released_X, released, died, ongoing, n_iter, p
 }
 
 
-posterior_samples <- run_mcmc(mortality_X, released_X, released, died, ongoing, 15000, 0.15)
+posterior_samples <- run_mcmc(mortality_X, released_X, released, died, ongoing, 25000, 0.15)
 
+burnin <- 15000
+
+posterior_samples_burned_in <- posterior_samples[-(1:burnin)]
+
+posterior_samples_burned_in <- do.call(
+  rbind,
+  posterior_samples_burned_in
+)
+
+mean_posterior <- colMeans(posterior_samples_burned_in)
+
+
+# Probability of death
+
+beta <- mean_posterior[1]
+
+beta_age_mean <- mean_posterior[2]
+
+beta_gender_mean <- mean_posterior[3]
+
+beta_disease_mean <- mean_posterior[4]
+
+alpha <- mean_posterior[5]
+
+alpha_date <- mean_posterior[6]
+logits <- beta + (beta_age_mean *  ages) + (beta_gender_mean * genders) + (beta_disease_mean * diseases)
+
+p_died <- plogis(logits)
+
+# Probability of released
+
+logits <- alpha + (alpha_date * admission_date)
+
+p_released <- plogis(logits)
+
+p_deceased <- p_died
+
+p_recovered <- (1 - p_died) * p_released
+
+p_ongoing <- (1 - p_died) * (1 - p_released)
+
+
+pred_died <- ifelse(p_deceased >= 0.5, 1, 0)
+accuracy_died <- mean(pred_died == died)
+
+pred_released <- ifelse(p_released[map_alive] >= 0.5, 1, 0)
+accuracy_released <- mean(pred_released == released[map_alive])
 
 
 
